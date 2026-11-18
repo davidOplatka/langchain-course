@@ -1,7 +1,3 @@
-from dotenv import load_dotenv
-
-load_dotenv()
-
 from enum import StrEnum
 from typing import List
 from pydantic import BaseModel, Field
