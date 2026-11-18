@@ -3,12 +3,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from enum import StrEnum
-
-# from langchain_anthropic import ChatAnthropic
-# from langchain_core.prompts import PromptTemplate
+from typing import List
+from pydantic import BaseModel, Field
 
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
+from langchain.agents.structured_output import ToolStrategy
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
@@ -18,6 +18,23 @@ class Operator(StrEnum):
     SUB = "SUBTRACTION"
     MULT = "MULTIPLICATION"
     DIV = "DIVISION"
+
+
+class Value(BaseModel):
+    """Schema for the value of a mathematical expression"""
+
+    value: float = Field(
+        "The result of applying a mathematical operator to two operands."
+    )
+
+
+class AgentResponse(BaseModel):
+    """Schema for agent response with tool call outputs."""
+
+    answer: str = Field(description="The agent's answer to the user query.")
+    tool_outputs: List[Value] = Field(
+        description="The value returned from evaluating each mathematical operation."
+    )
 
 
 @tool
@@ -51,7 +68,10 @@ def main() -> None:
     # llm = ChatOllama(model="gpt-oss:latest", temperature=0.1)
     llm = ChatOllama(model="qwen3.5:latest", temperature=0.1)
     tools = [basic_arithmetic]
-    agent = create_agent(model=llm, tools=tools)
+    agent = create_agent(
+        model=llm, tools=tools, response_format=ToolStrategy(AgentResponse)
+    )
+    # agent = create_agent(model=llm, tools=tools)
 
     result = agent.invoke(
         {
@@ -75,6 +95,8 @@ def main() -> None:
                 print(f"AI Message: {message.content}")
         elif isinstance(message, ToolMessage):
             print(f"Output: {message.content}")
+
+    print(f"Structured Response: {result['structured_response']}")
 
 
 if __name__ == "__main__":
