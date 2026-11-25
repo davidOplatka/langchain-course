@@ -139,7 +139,9 @@ def run_agent(query: str):
             print(
                 "[Parsing] ERROR: Could not parse Action/Action Input from LLM output"
             )
-            break
+            observation = f"Error: Could not parse Action/Action Input from LLM output: '{output}'.\nMake sure to follow the instructions for the Thought, Action, and Action Input format."
+            scratchpad += f"\nObservation: {observation}\n"
+            continue
 
         # Process the next tool call only
         tool_name = action_match.group(1).strip()
