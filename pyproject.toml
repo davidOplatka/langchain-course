@@ -13,7 +13,10 @@ dependencies = [
     "langchain>=1.4.10",
     "langchain-anthropic>=1.7.10",
     "langchain-ollama>=1.1.0",
+    "langchain-pinecone>=0.2.11",
+    "langchain-unstructured>=1.0.1",
     "python-dotenv>=1.2.4",
+    "unstructured>=0.23.1",
 ]
 
 [project.scripts]
